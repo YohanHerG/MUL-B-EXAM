@@ -1,0 +1,93 @@
+//Yohan Hernando González Gutiérrez - 6000615
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Pirámides con Three.js</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+        .container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 10px;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <script src="https://threejs.org/build/three.js"></script>
+        <script>
+            // Crear la función para generar una pirámide recortada de base poligonal
+            function crearPiramide(dimBaseInf, dimBaseSup, nlados, altura) {
+                // Crear geometría de la pirámide recortada
+                const geometria = new THREE.ConeGeometry(dimBaseSup / 2, altura, nlados);
+
+                // Crear material con un color aleatorio
+                const material = new THREE.MeshBasicMaterial({ color: getRandomColor() });
+
+                // Crear el objeto de la pirámide
+                const piramide = new THREE.Mesh(geometria, material);
+
+                return piramide;
+            }
+
+            // Función para generar un color aleatorio en formato hexadecimal
+            function getRandomColor() {
+                const letters = '0123456789ABCDEF';
+                let color = '#';
+                for (let i = 0; i < 6; i++) {
+                    color += letters[Math.floor(Math.random() * 16)];
+                }
+                return color;
+            }
+
+            // Crear la escena y la cámara
+            const escena = new THREE.Scene();
+            const camara = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camara.position.z = 5;
+
+            // Crear el renderizador
+            const renderizador = new THREE.WebGLRenderer();
+            renderizador.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderizador.domElement);
+
+            // Crear el arreglo de pirámides y estructuras de repetición
+            const piramides = [];
+
+            for (let i = 0; i < 8; i++) {
+                // Generar las medidas y dimensiones aleatorias para cada pirámide
+                const dimBaseInf = Math.random() * 2 + 1; // Rango: 1-3
+                const dimBaseSup = Math.random() * 2 + 4; // Rango: 4-6
+                const nlados = Math.floor(Math.random() * 6) + 3; // Rango: 3-8
+                const altura = Math.random() * 4 + 2; // Rango: 2-6
+
+                // Calcular la posición de la pirámide en el escenario
+                const posX = Math.random() * 10 - 5; // Rango: -5-5
+                const posY = Math.random() * 10 - 5; // Rango: -5-5
+                const posZ = Math.random() * 10 - 5; // Rango: -5-5
+
+                // Crear la pirámide y asignarle posición
+                const piramide = crearPiramide(dimBaseInf, dimBaseSup, nlados, altura);
+                piramide.position.set(posX, posY, posZ);
+
+                // Agregar la pirámide al arreglo y a la escena
+                piramides.push(piramide);
+                escena.add(piramide);
+            }
+
+            // Función para animar la escena
+            function animar() {
+                requestAnimationFrame(animar);
+                renderizador.render(escena, camara);
+            }
+
+            // Iniciar la animación
+            animar();
+        </script>
+    </div>
+</body>
+</html>
