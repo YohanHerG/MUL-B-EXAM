@@ -1,93 +1,122 @@
-//Yohan Hernando González Gutiérrez - 6000615
-
 <!DOCTYPE html>
-<html>
+<html lang="en-GB">
+
 <head>
-    <meta charset="utf-8">
-    <title>Pirámides con Three.js</title>
-    <style>
-        body { margin: 0; }
-        canvas { display: block; }
-        .container {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            grid-template-rows: repeat(2, 1fr);
-            gap: 10px;
-            padding: 10px;
-        }
-    </style>
+  <meta charset="utf-8" />
+  <title>Rotacion de dos rectangulos</title>
+  <style>
+    body {
+      margin: 0;
+    }
+  </style>
 </head>
+
 <body>
-    <div class="container">
-        <script src="https://threejs.org/build/three.js"></script>
-        <script>
-            // Crear la función para generar una pirámide recortada de base poligonal
-            function crearPiramide(dimBaseInf, dimBaseSup, nlados, altura) {
-                // Crear geometría de la pirámide recortada
-                const geometria = new THREE.ConeGeometry(dimBaseSup / 2, altura, nlados);
+  <script type="module">
+    import * as THREE from 'https://sebastiann16.github.io/CompG/three.module.js';
+    import { OrbitControls } from 'https://sebastiann16.github.io/CompG/OrbitControls.js';
 
-                // Crear material con un color aleatorio
-                const material = new THREE.MeshBasicMaterial({ color: getRandomColor() });
+    var WIDTH = window.innerWidth;
+    var HEIGHT = window.innerHeight;
 
-                // Crear el objeto de la pirámide
-                const piramide = new THREE.Mesh(geometria, material);
+    var renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(WIDTH, HEIGHT);
+    renderer.setClearColor(0xDDDDDD, 1);
+    document.body.appendChild(renderer.domElement);
 
-                return piramide;
-            }
+    var scene = new THREE.Scene();
 
-            // Función para generar un color aleatorio en formato hexadecimal
-            function getRandomColor() {
-                const letters = '0123456789ABCDEF';
-                let color = '#';
-                for (let i = 0; i < 6; i++) {
-                    color += letters[Math.floor(Math.random() * 16)];
-                }
-                return color;
-            }
+    var camera = new THREE.PerspectiveCamera(70, WIDTH / HEIGHT);
+    camera.position.z = 20;
+    camera.position.y = 5;
+    scene.add(camera);
+    const light = new THREE.AmbientLight(0x404040, 5);
+    scene.add(light);
 
-            // Crear la escena y la cámara
-            const escena = new THREE.Scene();
-            const camara = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camara.position.z = 5;
+    // Definir los parámetros para crear las pirámides pentagonales
+    var numPiramides = 4; // Cantidad de pirámides
+    var ladosBase = 5; // Lados de la base poligonal
+    var radioBase = 2; // Radio de la base poligonal
+    var alturaPiramides = 4; // Altura de cada pirámide
 
-            // Crear el renderizador
-            const renderizador = new THREE.WebGLRenderer();
-            renderizador.setSize(window.innerWidth, window.innerHeight);
-            document.body.appendChild(renderizador.domElement);
+    // Arreglo para almacenar las pirámides
+    var piramides = [];
 
-            // Crear el arreglo de pirámides y estructuras de repetición
-            const piramides = [];
+    // Función para crear y retornar una pirámide pentagonal con un color aleatorio
+    function crearPiramide(lados, radio, altura) {
+      // Crear la geometría de la base pentagonal
+      var baseGeometry = new THREE.CircleBufferGeometry(radio, lados);
+      baseGeometry.rotateX(Math.PI / 2); // Rotar la base pentagonal 90 grados en el eje X
+      baseGeometry.rotateY(Math.PI / 2);
 
-            for (let i = 0; i < 8; i++) {
-                // Generar las medidas y dimensiones aleatorias para cada pirámide
-                const dimBaseInf = Math.random() * 2 + 1; // Rango: 1-3
-                const dimBaseSup = Math.random() * 2 + 4; // Rango: 4-6
-                const nlados = Math.floor(Math.random() * 6) + 3; // Rango: 3-8
-                const altura = Math.random() * 4 + 2; // Rango: 2-6
+      // Crear la geometría de la pirámide truncada
+      var truncGeometry = new THREE.ConeBufferGeometry(radio, altura, lados, 1, true);
 
-                // Calcular la posición de la pirámide en el escenario
-                const posX = Math.random() * 10 - 5; // Rango: -5-5
-                const posY = Math.random() * 10 - 5; // Rango: -5-5
-                const posZ = Math.random() * 10 - 5; // Rango: -5-5
+      // Mover la geometría de la pirámide truncada hacia arriba
+      truncGeometry.translate(0, altura / 2, 0);
 
-                // Crear la pirámide y asignarle posición
-                const piramide = crearPiramide(dimBaseInf, dimBaseSup, nlados, altura);
-                piramide.position.set(posX, posY, posZ);
+      // Crear el Mesh de la pirámide truncada
+      var truncMesh = new THREE.Mesh(truncGeometry);
 
-                // Agregar la pirámide al arreglo y a la escena
-                piramides.push(piramide);
-                escena.add(piramide);
-            }
+      // Crear el Mesh de la base pentagonal
+      var baseMesh = new THREE.Mesh(baseGeometry);
 
-            // Función para animar la escena
-            function animar() {
-                requestAnimationFrame(animar);
-                renderizador.render(escena, camara);
-            }
+      // Crear un grupo para contener la base y la pirámide
+      var group = new THREE.Group();
+      group.add(truncMesh);
+      group.add(baseMesh);
 
-            // Iniciar la animación
-            animar();
-        </script>
-    </div>
+      // Generar un color aleatorio en formato hexadecimal
+      var color = getRandomColor();
+
+      // Aplicar el color al material de la pirámide
+      truncMesh.material = new THREE.MeshBasicMaterial({ color: color });
+
+      return group;
+    }
+
+    // Función para generar un color aleatorio en formato hexadecimal
+    function getRandomColor() {
+      var letters = '0123456789ABCDEF';
+      var color = '#';
+      for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+
+    // Crear las pirámides y agregarlas al arreglo
+    for (var i = 0; i < numPiramides; i++) {
+      var piramide = crearPiramide(ladosBase, radioBase, alturaPiramides);
+      piramide.position.set(i * 5, 0, 0); // Ubicar las pirámides en línea recta
+      piramides.push(piramide);
+      scene.add(piramide);
+    }
+
+    // Crear las pirámides y agregarlas al arreglo
+    for (var i = 0; i < numPiramides; i++) {
+      var piramide = crearPiramide(ladosBase, radioBase, alturaPiramides);
+      piramide.position.set(i * 5, 5, 0); // Ubicar las pirámides en línea recta
+      piramides.push(piramide);
+      scene.add(piramide);
+    }
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    const axesHelper = new THREE.AxesHelper(1000);
+    scene.add(axesHelper);
+
+    const size = 1000;
+    const divisions = 1000;
+    const gridHelper = new THREE.GridHelper(size, divisions);
+    scene.add(gridHelper);
+
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    animate();
+  </script>
 </body>
+
 </html>
