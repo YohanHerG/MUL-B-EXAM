@@ -1,9 +1,11 @@
+//Yohan González - 6000615
+
 <!DOCTYPE html>
 <html lang="en-GB">
 
 <head>
   <meta charset="utf-8" />
-  <title>Rotacion de dos rectangulos</title>
+  <title>Piramides pentagonales</title>
   <style>
     body {
       margin: 0;
@@ -21,7 +23,7 @@
 
     var renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(WIDTH, HEIGHT);
-    renderer.setClearColor(0xDDDDDD, 1);
+    renderer.setClearColor(0xFFF2E1, 1);
     document.body.appendChild(renderer.domElement);
 
     var scene = new THREE.Scene();
@@ -34,31 +36,36 @@
     scene.add(light);
 
     // Definir los parámetros para crear las pirámides pentagonales
-    var numPiramides = 4; // Cantidad de pirámides
-    var ladosBase = 5; // Lados de la base poligonal
-    var radioBase = 2; // Radio de la base poligonal
-    var alturaPiramides = 4; // Altura de cada pirámide
+    // Cantidad pirámides
+    var numPiramides = 4; 
+    // Lados base poligonal
+    var ladosBase = 5; 
+    // Radio base poligonal
+    var radioBase = 2.5; 
+    // Altura pirámides
+    var alturaPiramides = 4.5; 
 
     // Arreglo para almacenar las pirámides
     var piramides = [];
 
-    // Función para crear y retornar una pirámide pentagonal con un color aleatorio
+    // Función para crear y retornar una pirámide 
     function crearPiramide(lados, radio, altura) {
+
       // Crear la geometría de la base pentagonal
       var baseGeometry = new THREE.CircleBufferGeometry(radio, lados);
       baseGeometry.rotateX(Math.PI / 2); // Rotar la base pentagonal 90 grados en el eje X
       baseGeometry.rotateY(Math.PI / 2);
 
-      // Crear la geometría de la pirámide truncada
+      // Crear la geometría de la pirámide
       var truncGeometry = new THREE.ConeBufferGeometry(radio, altura, lados, 1, true);
 
-      // Mover la geometría de la pirámide truncada hacia arriba
+      // Mover la geometría de la pirámide hacia arriba
       truncGeometry.translate(0, altura / 2, 0);
 
-      // Crear el Mesh de la pirámide truncada
+      // Crear el Mesh (pirámide truncada)
       var truncMesh = new THREE.Mesh(truncGeometry);
 
-      // Crear el Mesh de la base pentagonal
+      // Crear el Mesh (base pentagonal)
       var baseMesh = new THREE.Mesh(baseGeometry);
 
       // Crear un grupo para contener la base y la pirámide
@@ -69,13 +76,13 @@
       // Generar un color aleatorio en formato hexadecimal
       var color = getRandomColor();
 
-      // Aplicar el color al material de la pirámide
+      // Aplicar el color a la pirámide
       truncMesh.material = new THREE.MeshBasicMaterial({ color: color });
 
       return group;
     }
 
-    // Función para generar un color aleatorio en formato hexadecimal
+    // Función para generar un color aleatorio (hexadecimal)
     function getRandomColor() {
       var letters = '0123456789ABCDEF';
       var color = '#';
@@ -101,6 +108,7 @@
       scene.add(piramide);
     }
 
+    // Creacion de los OrbitControls
     const controls = new OrbitControls(camera, renderer.domElement);
     const axesHelper = new THREE.AxesHelper(1000);
     scene.add(axesHelper);
