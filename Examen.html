@@ -15,8 +15,8 @@
 
 <body>
   <script type="module">
-    import * as THREE from 'https://sebastiann16.github.io/CompG/three.module.js';
-    import { OrbitControls } from 'https://sebastiann16.github.io/CompG/OrbitControls.js';
+    import * as THREE from 'https://cdn.skypack.dev/three@0.132.2/build/three.module.js';
+    import { OrbitControls } from 'https://cdn.skypack.dev/three@0.132.2/examples/jsm/controls/OrbitControls.js';
 
     var WIDTH = window.innerWidth;
     var HEIGHT = window.innerHeight;
@@ -29,7 +29,7 @@
     var scene = new THREE.Scene();
 
     var camera = new THREE.PerspectiveCamera(70, WIDTH / HEIGHT);
-    camera.position.z = 20;
+    camera.position.z = 30;
     camera.position.y = 5;
     scene.add(camera);
     const light = new THREE.AmbientLight(0x404040, 5);
